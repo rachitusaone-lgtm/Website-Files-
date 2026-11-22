@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0b1220">
+<title>BrandMail — Find public brand emails</title>
+<meta name="description" content="Enter one brand name, discover publicly listed business contact email addresses and copy them.">
+<style>
+:root{font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,sans-serif;color:#f2f5fd;background:#0a1020}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;background:radial-gradient(ellipse 40% 32% at 12% 18%,#213c61b0,transparent),radial-gradient(ellipse 45% 45% at 91% 66%,#184b4680,transparent),#0a1020}
+button,input{font:inherit}button{cursor:pointer}
+.shell{width:min(1060px,calc(100% - 36px));margin:auto}
+header{display:flex;align-items:center;justify-content:space-between;padding:29px 0;border-bottom:1px solid #2e3950}
+.brand{font-weight:850;font-size:24px;letter-spacing:-1.2px;display:flex;align-items:center;gap:12px}.brand svg{width:42px;height:42px;padding:10px;border-radius:13px;background:#284d52;color:#91ffdf}
+.brand span{color:#8cf2d5}
+nav{font-size:12px;color:#aab7d0;font-weight:600}
+nav b{color:#83edca;padding-right:7px}
+main{padding:78px 0 20px}
+.tag{text-align:center;color:#b1b8ff;letter-spacing:2px;font-size:11px;font-weight:850;text-transform:uppercase}
+h1{text-align:center;font-size:clamp(45px,7vw,76px);line-height:1.07;letter-spacing:-.07em;max-width:790px;margin:20px auto 20px}
+h1 em{font-style:normal;background:linear-gradient(100deg,#b59dff,#8dbaf8,#8cebd3);-webkit-background-clip:text;background-clip:text;color:transparent}
+.intro{color:#adb9cc;font-size:16px;line-height:1.7;text-align:center;max-width:650px;margin:0 auto 43px}
+.panel{max-width:800px;margin:auto;padding:32px;border-radius:22px;background:linear-gradient(140deg,#1a2540,#111a2d);border:1px solid #36455d;box-shadow:0 24px 85px #0004}
+.panel-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:26px}
+.panel-head strong{font-size:17px}
+.chip{font-size:10px;font-weight:800;color:#91ffdb;background:#17413b;border:1px solid #37645b;border-radius:100px;padding:9px 12px;letter-spacing:.7px}
+label{display:block;color:#d2dbec;font-size:12px;font-weight:750;margin-bottom:10px}
+.search{display:flex;gap:10px}
+.input{flex:1;min-width:0;position:relative}
+.search-icon{position:absolute;top:50%;transform:translateY(-50%);left:17px;color:#8b98ae}
+input{height:58px;background:#0b1528;border:1px solid #41516d;border-radius:11px;color:#f8fbff;width:100%;outline:none;padding:0 16px 0 48px;font-size:15px}
+input::placeholder{color:#77869d}input:focus{border-color:#90efd7;box-shadow:0 0 0 3px #90efd71a}
+.go{height:58px;padding:0 27px;background:linear-gradient(110deg,#98ffe0,#69e0cb);color:#10352f;border:0;border-radius:11px;font-size:14px;font-weight:850}
+.go:disabled{opacity:.55;cursor:wait}
+.hint{margin:13px 0 0;color:#8190a9;font-size:11px}
+.results{border-top:1px solid #34435c;margin-top:30px;padding-top:26px}
+.results[hidden],.msg[hidden]{display:none}
+.result-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+.eyebrow{font-size:11px;letter-spacing:1px;font-weight:850;color:#8ff0cf;text-transform:uppercase}
+.status{font-size:12px;color:#9baac1}
+.site{display:inline-block;color:#adc5ed;font-size:13px;margin-bottom:16px;word-break:break-word;text-decoration:underline;text-underline-offset:3px}
+.items{display:grid;gap:10px}
+.item{background:#0d182a;border:1px solid #34535c;border-radius:13px;padding:16px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.address{font-size:clamp(14px,2.5vw,19px);font-weight:800;overflow-wrap:anywhere}
+.source{display:inline-block;color:#a6b5ce;margin-top:8px;font-size:11px;word-break:break-word}
+.copy{flex-shrink:0;border:1px solid #4d9b89;color:#103c35;font-size:12px;font-weight:850;padding:12px 16px;border-radius:9px;background:#96f5dc}
+.copy:hover{background:#c1ffec}
+.disclaimer{font-size:11px;color:#8999b1;margin:16px 0 0;line-height:1.6}
+.msg{display:flex;align-items:flex-start;gap:12px;color:#b6c4d8;line-height:1.6;font-size:14px}
+.spinner{width:22px;height:22px;flex-shrink:0;border:3px solid #4c5b6f;border-top-color:#8ff2d3;border-radius:50%;animation:rotate .7s linear infinite}
+@keyframes rotate{to{transform:rotate(360deg)}}
+.steps{margin:65px auto 60px;max-width:980px;display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+.step{display:flex;gap:14px;color:#dce6f6}
+.step-icon{width:42px;height:42px;border-radius:12px;background:#213c49;border:1px solid #385a63;display:grid;place-items:center;flex-shrink:0;font-size:20px}
+.step strong{font-size:13px}.step p{color:#92a1b8;font-size:12px;line-height:1.6;margin:6px 0 0}
+footer{border-top:1px solid #26354b;color:#74839f;display:flex;justify-content:space-between;gap:15px;flex-wrap:wrap;padding:24px 0;font-size:11px}
+@media(max-width:650px){main{padding-top:55px}h1{letter-spacing:-.05em}.intro{font-size:14px}.panel{padding:22px 18px}.search{flex-direction:column}.go{width:100%}.steps{grid-template-columns:1fr;gap:25px;margin:43px auto}.item{align-items:flex-start;flex-direction:column}.copy{align-self:flex-start}.panel-head strong{font-size:15px}}
+</style>
+</head>
+<body>
+<div class="shell">
+<header>
+<div class="brand"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="3"/><path d="m3 7 9 7 9-7"/></svg><div>brand<span>mail</span>.</div></div>
+<nav><b>●</b> Public email finder</nav>
+</header>
+<main>
+<p class="tag">The easiest way to find business emails</p>
+<h1>A brand name in.<br><em>Public emails out.</em></h1>
+<p class="intro">Enter one brand name. We search Google for its official website, check public contact pages, and show available email addresses with one-click copy.</p>
+<section class="panel">
+<div class="panel-head"><strong>↗ &nbsp; Find a brand's emails</strong><span class="chip">ONE BRAND AT A TIME</span></div>
+<form id="search-form">
+<label for="brand-input">Brand name</label>
+<div class="search"><div class="input"><span class="search-icon">⌕</span><input id="brand-input" type="text" maxlength="80" placeholder="e.g. Patagonia" required autofocus autocomplete="off"></div><button class="go" type="submit" id="go">Find Emails ↗</button></div>
+<p class="hint">No spreadsheets, no email guessing. Only publicly discoverable information.</p>
+</form>
+<div class="results" id="results" hidden>
+<div id="loading" class="msg" hidden><div class="spinner"></div><div>Searching for the official website and checking public contact pages…</div></div>
+<div id="error" class="msg" hidden></div>
+<div id="found" hidden>
+<div class="result-head"><span class="eyebrow" id="count"></span><span class="status" id="time"></span></div>
+<a class="site" id="website" target="_blank" rel="noopener noreferrer"></a>
+<div class="items" id="items"></div>
+<p class="disclaimer" id="note"></p>
+</div>
+</div>
+</section>
+<div class="steps">
+<div class="step"><span class="step-icon">⌕</span><div><strong>01 — Find the website</strong><p>Search Google to identify the brand's official website.</p></div></div>
+<div class="step"><span class="step-icon">◎</span><div><strong>02 — Check public pages</strong><p>Look for contact emails shared on the website and search results.</p></div></div>
+<div class="step"><span class="step-icon">▣</span><div><strong>03 — Copy the email</strong><p>See public sources and copy the address you want.</p></div></div>
+</div>
+</main>
+<footer><span>© 2026 BrandMail</span><span>Only publicly available contact details. No invented emails.</span></footer>
+</div>
+<script>
+const $=id=>document.getElementById(id);
+const form=$('search-form'), input=$('brand-input'), go=$('go');
+const sections=['loading','error','found'];
+function show(target) { $('results').hidden=false;for(const section of sections) $(section).hidden=section!==target; }
+function safeLink(raw) { try {const u=new URL(raw);return u.protocol==='https:' || u.protocol==='http:'?u.href:null;}catch{return null;} }
+async function copy(email,button) {
+  try {
+    if(navigator.clipboard && window.isSecureContext) await navigator.clipboard.writeText(email);
+    else {
+      const field=document.createElement('textarea');field.value=email;document.body.appendChild(field);field.select();
+      if(!document.execCommand('copy')) throw new Error('copy not supported');
+      field.remove();
+    }
+    button.textContent='Copied ✓';setTimeout(()=>button.textContent='Copy Email',1800);
+  } catch {button.textContent='Select email';const range=document.createRange();range.selectNodeContents(button.closest('.item').querySelector('.address'));getSelection().removeAllRanges();getSelection().addRange(range);}
+}
+form.addEventListener('submit',async event=>{
+  event.preventDefault();
+  const brand=input.value.trim();if(!brand)return;
+  const started=Date.now();go.disabled=true;go.textContent='Searching…';show('loading');
+  try {
+    const controller=new AbortController();const timeout=setTimeout(()=>controller.abort(),35000);
+    let response;
+    try {response=await fetch('/api/search',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({brand}),signal:controller.signal});}
+    finally{clearTimeout(timeout);}
+    const data=await response.json();
+    if(!response.ok) throw new Error(data.error||'Search failed');
+    $('items').replaceChildren();
+    const mails=Array.isArray(data.emails)?data.emails:[];
+    $('count').textContent=mails.length?mails.length+' PUBLIC EMAIL'+(mails.length===1?'':'S')+' FOUND':'NO PUBLIC EMAIL FOUND';
+    $('time').textContent=data.cached?'Recent result':((Date.now()-started)/1000).toFixed(1)+' sec';
+    const address=safeLink(data.website);
+    $('website').hidden=!address;
+    if(address){$('website').href=address;$('website').textContent='Website: '+new URL(address).hostname+' ↗';}
+    for(const entry of mails) {
+      const row=document.createElement('div');row.className='item';
+      const details=document.createElement('div');
+      const text=document.createElement('div');text.className='address';text.textContent=entry.email;
+      const src=document.createElement('a');src.className='source';src.textContent='View public source ↗';
+      const url=safeLink(entry.sourceUrl);if(url){src.href=url;src.target='_blank';src.rel='noopener noreferrer';}else{src.hidden=true;}
+      details.append(text,src);
+      const button=document.createElement('button');button.type='button';button.className='copy';button.textContent='Copy Email';
+      button.addEventListener('click',()=>copy(entry.email,button));
+      row.append(details,button);$('items').appendChild(row);
+    }
+    $('note').textContent=data.note||'Public address only. Inbox ownership is not verified.';
+    show('found');
+  } catch(e) { $('error').textContent=e.name==='AbortError'?'The search timed out. Please try again.':e.message||'Something went wrong';show('error');}
+  finally{go.disabled=false;go.textContent='Find Emails ↗';}
+});
+</script>
+</body>
+</html>
